@@ -1,0 +1,50 @@
+const int pingTrigPin = A4; // Trigger connected to PIN A4
+const int pingEchoPin = A5; // Echo connected to PIN A5
+const int ledPin = 12;
+const int buzPin = 13; // Buzzer connected to PIN 13
+const int buz1Pin = 9; // Second Buzzer connected to PIN 9
+const int vibPin = 4; // Vibration motor connected to PIN 4
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(buzPin, OUTPUT);
+  pinMode(buz1Pin, OUTPUT);
+  pinMode(vibPin, OUTPUT);
+  pinMode(ledPin, OUTPUT);
+}
+
+void loop() {
+  long duration, cm;
+  pinMode(pingTrigPin, OUTPUT);
+  digitalWrite(pingTrigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(pingTrigPin, HIGH);
+  delayMicroseconds(5);
+  digitalWrite(pingTrigPin, LOW);
+  pinMode(pingEchoPin, INPUT);
+  duration = pulseIn(pingEchoPin, HIGH);
+  cm = microsecondsToCentimeters(duration);
+
+  if (cm <= 100 && cm > 0) {
+    int d = map(cm, 1, 100, 20, 2000);
+    digitalWrite(buzPin, HIGH);
+    digitalWrite(buz1Pin, HIGH);
+    digitalWrite(vibPin, HIGH); // Trigger the vibration motor
+    delay(50);
+    digitalWrite(buzPin, LOW);
+    digitalWrite(buz1Pin, LOW);
+    digitalWrite(vibPin, LOW); // Turn off the vibration motor
+    delay(d);
+    digitalWrite(ledPin, HIGH);
+  } else {
+    digitalWrite(ledPin, LOW);
+  }
+  Serial.print(cm);
+  Serial.print("cm");
+  Serial.println();
+  delay(40);
+}
+
+long microsecondsToCentimeters(long microseconds) {
+  return microseconds / 29 / 2;
+}
